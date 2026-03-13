@@ -20,11 +20,13 @@ Koko is a full-stack instant messaging platform built with the MERN stack. It fe
 ## Installation
 
 1. Clone the repository:
+
 ```bash
    git clone https://github.com/turja-td/Koko---Realtime-MERN-Stack-Chatapp.git
 ```
 
 2. Install dependencies and build:
+
 ```bash
    npm run build
 ```
@@ -39,6 +41,7 @@ Koko is a full-stack instant messaging platform built with the MERN stack. It fe
    - `NODE_ENV`
 
 4. Start the application:
+
 ```bash
    npm start
 ```
