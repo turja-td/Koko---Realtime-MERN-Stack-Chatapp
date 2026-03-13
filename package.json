@@ -1,0 +1,13 @@
+{
+  "name": "koko-chatapp",
+  "version": "1.0.1",
+  "description": "Koko: A real-time full-stack chat application built with the MERN stack, Socket.io, and TailwindCSS, featuring instant messaging, read receipts, and live notifications.",
+  "license": "ISC",
+  "author": "Turja",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  }
+}
