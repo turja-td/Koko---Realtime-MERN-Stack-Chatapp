@@ -2,16 +2,12 @@ import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAuthStore } from "../store/useAuthStore"; // Added this import
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
-  const typingTimeoutRef = useRef(null); // Ref for typing timeout
-
-  const { sendMessage, selectedUser } = useChatStore();
-  const { authUser, socket } = useAuthStore(); // Access socket and user
+  const { sendMessage } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -32,38 +28,11 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Typing logic
-  const handleKeyDown = () => {
-    if (!socket || !selectedUser) return;
-
-    socket.emit("typing", {
-      senderId: authUser._id,
-      receiverId: selectedUser._id,
-    });
-
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-
-    typingTimeoutRef.current = setTimeout(() => {
-      socket.emit("stopTyping", {
-        senderId: authUser._id,
-        receiverId: selectedUser._id,
-      });
-    }, 2000);
-  };
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
 
     try {
-      // Stop typing indicator immediately when message is sent
-      if (socket) {
-        socket.emit("stopTyping", {
-          senderId: authUser._id,
-          receiverId: selectedUser._id,
-        });
-      }
-
       await sendMessage({
         text: text.trim(),
         image: imagePreview,
@@ -86,11 +55,11 @@ const MessageInput = () => {
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              className="size-20 object-cover rounded-lg border border-zinc-700"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
+              className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-base-300
               flex items-center justify-center"
               type="button"
             >
@@ -103,14 +72,6 @@ const MessageInput = () => {
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
-            type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown} // Trigger typing event
-          />
-          <input
             type="file"
             accept="image/*"
             className="hidden"
@@ -120,22 +81,31 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                      ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className={`flex btn btn-circle flex-shrink-0
+                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
           </button>
+
+          <input
+            type="text"
+            className="input input-bordered rounded-lg input-sm sm:input-md flex-1"
+            placeholder="Type a message..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
         </div>
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
+          className="btn btn-sm btn-circle btn-primary flex-shrink-0"
           disabled={!text.trim() && !imagePreview}
         >
-          <Send size={22} />
+          <Send size={18} />
         </button>
       </form>
     </div>
   );
 };
+
 export default MessageInput;
